@@ -1,7 +1,6 @@
 package com.inventory.controller;
 
 import com.inventory.entity.Product;
-import com.inventory.repository.ProductRepository;
 import com.inventory.service.ProductService;
 
 import org.springframework.beans.factory.annotation.Autowired;
