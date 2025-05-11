@@ -1,5 +1,6 @@
 package com.inventory.controller;
 import com.inventory.entity.Product;
+import com.inventory.entity.StockEntry;
 import com.inventory.service.DashBoardService;
 
 import java.util.List;
@@ -19,9 +20,17 @@ public class DashBoardController {
     this.dashBoardService = dashBoardService;
   }
   
+  @GetMapping("/recent-activity")
+  public List<StockEntry> getRecentActivity(){
+    return dashBoardService.getRecentActivity();
+  }
+
+
   @GetMapping("/low-stock")
   public List<Product> getLowStockProducts(){
   return dashBoardService.getLowStockProducts();
+
+  
 
 }
 }
