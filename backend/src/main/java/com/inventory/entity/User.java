@@ -2,7 +2,7 @@ package com.inventory.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import java.time.LocalDateTime;
+
 
 @Data
 @Entity
