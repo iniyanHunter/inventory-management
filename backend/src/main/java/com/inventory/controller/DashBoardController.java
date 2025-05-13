@@ -1,4 +1,5 @@
 package com.inventory.controller;
+
 import com.inventory.entity.Product;
 import com.inventory.entity.StockEntry;
 import com.inventory.service.DashBoardService;
@@ -29,8 +30,5 @@ public class DashBoardController {
   @GetMapping("/low-stock")
   public List<Product> getLowStockProducts(){
   return dashBoardService.getLowStockProducts();
-
-  
-
-}
+  }
 }
