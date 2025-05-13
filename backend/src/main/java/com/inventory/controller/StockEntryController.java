@@ -1,7 +1,8 @@
 package com.inventory.controller;
 
 import com.inventory.entity.StockEntry;
-import com.inventory.repository.StockEntryRepository;
+import com.inventory.service.StockEntryService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,37 +12,23 @@ import java.util.List;
 @RequestMapping("/api/stock-entry")
 public class StockEntryController {
 
-    private final StockEntryRepository stockEntryRepository;
+    private final StockEntryService stockEntryService;
 
     @Autowired
-    public StockEntryController(StockEntryRepository stockEntryRepository) {
-        this.stockEntryRepository = stockEntryRepository;
+    public StockEntryController(StockEntryService stockEntryService) {
+        this.stockEntryService = stockEntryService;
     }
 
     @GetMapping
     public ResponseEntity<List<StockEntry>> getAllStockEntries() {
-        List<StockEntry> stockEntries = stockEntryRepository.findAll();
+        List<StockEntry> stockEntries = stockEntryService.getAllStockEntries();
         return ResponseEntity.ok(stockEntries);
     }
 
     @PostMapping
     public ResponseEntity<?> createStockEntry(@RequestBody StockEntry stockEntry) {
         try {
-            // Validate required fields
-            if (stockEntry.getQuantity() == null || stockEntry.getQuantity() < 0) {
-                return ResponseEntity.badRequest().body("Valid quantity is required");
-            }
-            if (stockEntry.getType() == null) {
-                return ResponseEntity.badRequest().body("Stock entry type is required");
-            }
-            if (stockEntry.getProduct() == null || stockEntry.getProduct().getId() == null) {
-                return ResponseEntity.badRequest().body("Product is required");
-            }
-            if (stockEntry.getCreatedBy() == null || stockEntry.getCreatedBy().getId() == null) {
-                return ResponseEntity.badRequest().body("Created by user is required");
-            }
-
-            StockEntry savedStockEntry = stockEntryRepository.save(stockEntry);
+            StockEntry savedStockEntry = stockEntryService.createStockEntry(stockEntry);
             return ResponseEntity.ok(savedStockEntry);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error creating stock entry: " + e.getMessage());
