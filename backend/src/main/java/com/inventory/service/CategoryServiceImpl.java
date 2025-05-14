@@ -4,12 +4,16 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.inventory.entity.Category;
 import com.inventory.entity.User;
 import com.inventory.repository.CategoryRepository;
 import com.inventory.repository.UserRepository;
 
+
+
+@Service
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
@@ -22,6 +26,7 @@ public class CategoryServiceImpl implements CategoryService {
         this.userRepository = userRepository;
     }
 
+    @Override
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }

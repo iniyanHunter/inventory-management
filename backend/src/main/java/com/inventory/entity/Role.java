@@ -1,7 +1,7 @@
-package com.inventory.entity;
+    package com.inventory.entity;
 
-public enum Role {
-    ADMIN,
-    USER,
-    MANAGER
-} 
+    public enum Role {
+        ADMIN,
+        USER,
+        MANAGER
+    } 

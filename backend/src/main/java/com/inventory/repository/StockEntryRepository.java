@@ -9,5 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StockEntryRepository extends JpaRepository<StockEntry, Long> {
 
-                              List<StockEntry> findByCreatedAfter(LocalDateTime minusDays);
+                              List<StockEntry> findByCreatedAtAfter(LocalDateTime minusDays);
 } 

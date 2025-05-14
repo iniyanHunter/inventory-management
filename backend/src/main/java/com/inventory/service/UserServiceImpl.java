@@ -3,10 +3,12 @@ package com.inventory.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.inventory.entity.User;
 import com.inventory.repository.UserRepository;
 
+@Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -15,10 +17,13 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
+    
+    @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
+    @Override
     public User createUser(User user) throws RuntimeException{
         // Validate required fields
         if (user.getName() == null || user.getName().trim().isEmpty()) {
