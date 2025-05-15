@@ -12,3 +12,4 @@ public interface DashBoardService {
 
     Stats getDashboardSummary(); 
 }
+

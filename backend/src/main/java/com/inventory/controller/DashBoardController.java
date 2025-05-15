@@ -23,7 +23,7 @@ public class DashBoardController {
     public DashBoardController(DashBoardService dashBoardService){
         this.dashBoardService = dashBoardService;
     }
-
+    
     @GetMapping("/recent-activity")
     public List<StockEntry> getRecentActivity(){
         return dashBoardService.getRecentActivity();
@@ -38,4 +38,5 @@ public class DashBoardController {
     public Stats getDashboardSummary() {
         return dashBoardService.getDashboardSummary();
     }
+
 }
