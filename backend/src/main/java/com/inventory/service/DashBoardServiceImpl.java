@@ -27,7 +27,7 @@ public class DashBoardServiceImpl implements DashBoardService {
     }
 
     public List<StockEntry> getRecentActivity() {
-        return stockEntryRepository.findByCreatedAtAtAfter(LocalDateTime.now().minusDays(1));
+        return stockEntryRepository.findByCreatedAtAfter(LocalDateTime.now().minusDays(1));
     }
 
     public List<Product> getLowStockProducts() {
@@ -36,25 +36,25 @@ public class DashBoardServiceImpl implements DashBoardService {
 
     @Override
     public Stats getDashboardSummary() {
-    Stats stats = new Stats();
+        Stats stats = new Stats();
 
-    List<Product> allProducts = productRepository.findAll();
-    List<Product> lowStock = productRepository.findLowStockProducts();
-    List<StockEntry> recent = stockEntryRepository.findByCreatedAtAfter(LocalDateTime.now().minusDays(1));
+        List<Product> allProducts = productRepository.findAll();
+        List<Product> lowStock = productRepository.findLowStockProducts();
+        List<StockEntry> recent = stockEntryRepository.findByCreatedAtAfter(LocalDateTime.now().minusDays(1));
 
-    int totalProducts = allProducts.size();
-    double totalValue = allProducts.stream()
-    .mapToDouble(p -> p.getPrice()
-    .multiply(BigDecimal.valueOf(p.getQuantity()))
-    .doubleValue())
-    .sum();
+        int totalProducts = allProducts.size();
+        double totalValue = allProducts.stream()
+        .mapToDouble(p -> p.getPrice()
+        .multiply(BigDecimal.valueOf(p.getQuantity()))
+        .doubleValue())
+        .sum();
 
 
-    stats.setTotalProducts(totalProducts);
-    stats.setTotalProductValue(totalValue);
-    stats.setLowStockCount(lowStock.size());
-    stats.setRecentActivityCount(recent.size());
+        stats.setTotalProducts(totalProducts);
+        stats.setTotalProductValue(totalValue);
+        stats.setLowStockCount(lowStock.size());
+        stats.setRecentActivityCount(recent.size());
 
-    return stats;
+        return stats;
+    }
 }
-
