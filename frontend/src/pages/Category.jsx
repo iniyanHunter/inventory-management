@@ -1,10 +1,16 @@
-import React from "react";
+import React from 'react';
+import '../styles/Category.css';
 
 function Category() {
   return (
-    <div>
-      <h2>Categories</h2>
-      <p>Manage your product categories here</p>
+    <div className="category-container">
+      <div className="category-header">
+        <h2 className="category-title">Categories</h2>
+        <button className="add-button">Add</button>
+      </div>
+      <div className="main-content">
+        Main Content Area
+      </div>
     </div>
   );
 }

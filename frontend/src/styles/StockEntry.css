@@ -1,0 +1,22 @@
+  .stockentry-container {
+    padding: 20px;
+    background-color: #a5f7d3; /* light green background, same as product */
+  }
+
+  .stockentry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .stockentry-title {
+    margin: 0;
+  }
+
+  .stockentry-content {
+    background-color: #e0ffe8; /* pale green content box */
+    padding: 40px;
+    text-align: center;
+    border-radius: 8px;
+  }
