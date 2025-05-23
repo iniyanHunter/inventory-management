@@ -1,29 +1,23 @@
-.sidebar {
-  width: 200px;
-  background-color: #f4f4f4;
-  padding: 1rem;
+/* Layout */
+.app-container {
+  display: flex;
+  height: 100vh;
+  font-family: Arial, sans-serif;
 }
 
-.sidebar h3 {
-  margin-bottom: 1rem;
+
+.header {
+  background-color: #333;
+  color: white;
+  padding: 20px;
 }
 
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.content-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-.sidebar li {
-  margin-bottom: 80px; /* Add spacing between items */
-}
-
-.sidebar a {
-  text-decoration: none;
-  color: #333;
-  font-weight: bold;
-}
-
-.sidebar a:hover {
-  color: #007bff;
+.main-content {
+  padding: 20px;
 }

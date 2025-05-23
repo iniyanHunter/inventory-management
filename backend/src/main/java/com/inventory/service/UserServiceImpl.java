@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
         if (user.getRole() == null) {
             throw new RuntimeException("Role is required");
         }
-         // Check if username or email already exists
+        
          if (userRepository.findByUsername(user.getUsername()) != null) {
             throw new RuntimeException("Username already exists");
         }
