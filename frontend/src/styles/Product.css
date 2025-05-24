@@ -1,12 +1,11 @@
-/* Product.css */
+/* In product.css */
 
-/* Consistent container styling */
 .product-container {
   padding: 20px;
-  background-color: #a5f7d3; /* Background color from Category.css */
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-/* Consistent header styling */
 .product-header {
   display: flex;
   justify-content: space-between;
@@ -14,82 +13,35 @@
   margin-bottom: 20px;
 }
 
-/* Consistent title styling (optional, but good for alignment) */
 .product-title {
-  margin: 0;
+  font-size: 2em;
+  color: #333;
 }
 
-/* Use the common 'add-button' style from Category.css */
-/* This ensures your "Add Product" button is green and styled like "Add" button on Category page */
 .add-button {
-  padding: 10px 20px; /* From Category.css */
-  background-color: #4CAF50; /* Green color from Category.css */
+  background-color: #007bff;
   color: white;
+  padding: 10px 15px;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
+  font-size: 1em;
 }
 
 .add-button:hover {
-  background-color: #45a049; /* Darker green on hover */
-}
-
-/* Consistent main content area styling */
-.main-content {
-  padding: 40px;
-  background-color: #e0ffe8; /* Background color from Category.css */
-  text-align: center;
-  border-radius: 8px;
-  /* Removed border and font-size from old product-content for consistency */
-  /* Remove height: 100%; as it conflicts with flex layout in App.css */
-}
-
-/* Form Specific Styles (these look fine as they are in your existing Product.css) */
-.product-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.form-row {
-  display: flex;
-  gap: 20px;
-}
-
-.form-group {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.form-group label {
-  font-weight: bold;
-}
-
-.form-group input,
-.form-group textarea,
-.form-group select {
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px;
-}
-
-.form-group select {
-  padding: 9px;
-}
-
-.submit-btn {
-  background-color: #007bff;
-  color: white;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-.submit-btn:hover {
   background-color: #0056b3;
+}
+
+/* Ensure the main-content div has height and width for AG Grid to render */
+.main-content {
+  /* AG Grid requires a defined height and width on its parent */
+  height: 600px; /* Example height */
+  width: 100%;
+}
+
+/* Basic styling for the AG-Grid theme */
+.ag-theme-alpine {
+  /* You can add custom overrides here if needed */
+  border-radius: 5px;
+  overflow: hidden; /* Important for border-radius to apply */
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import Modal from './Modal';
+import Modal from './Modal'; // Assuming Modal.jsx is in the same directory
 
 const AddProductModel = ({ onClose, onSubmit, formData, handleInputChange, categories }) => {
   return (
@@ -43,7 +43,8 @@ const AddProductModel = ({ onClose, onSubmit, formData, handleInputChange, categ
           <label>Category:</label>
           <select name="categoryId" value={formData.categoryId} onChange={handleInputChange} required>
             <option value="">Select Category</option>
-            {categories.map((category) => (
+            {/* Check if categories is an array before mapping to prevent errors */}
+            {Array.isArray(categories) && categories.map((category) => (
               <option key={category.id} value={category.id}>{category.name}</option>
             ))}
           </select>
