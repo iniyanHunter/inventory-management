@@ -1,11 +1,24 @@
-/* In product.css */
+/* src/styles/Product.css */
 
-.product-container {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+/* CSS Variables for consistent theme */
+:root {
+  --green-light: #a5f7d3;
+  --green-dark: #2d6a4f;
+  --green-btn: #4CAF50;
+  --green-btn-hover: #45a049;
+  --content-bg: #e0ffe8;
+  --input-bg: #f1f8e9;
+  --input-border: #a5d6a7;
 }
 
+/* Container */
+.product-container {
+  padding: 20px;
+  background-color: var(--green-light);
+  min-height: 100vh;
+}
+
+/* Header */
 .product-header {
   display: flex;
   justify-content: space-between;
@@ -14,34 +27,144 @@
 }
 
 .product-title {
-  font-size: 2em;
-  color: #333;
+  margin: 0;
+  color: var(--green-dark);
+  font-size: 24px;
 }
 
+/* Add Button */
 .add-button {
-  background-color: #007bff;
+  background-color: var(--green-btn);
   color: white;
-  padding: 10px 15px;
+  padding: 10px 20px;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
-  font-size: 1em;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
 }
 
 .add-button:hover {
-  background-color: #0056b3;
+  background-color: var(--green-btn-hover);
 }
 
-/* Ensure the main-content div has height and width for AG Grid to render */
+/* Main Content */
 .main-content {
-  /* AG Grid requires a defined height and width on its parent */
-  height: 600px; /* Example height */
-  width: 100%;
+  background-color: var(--content-bg);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Basic styling for the AG-Grid theme */
+/* AG Grid White Theme */
 .ag-theme-alpine {
-  /* You can add custom overrides here if needed */
-  border-radius: 5px;
-  overflow: hidden; /* Important for border-radius to apply */
+  background-color: white !important;
+  border: 1px solid #dee2e6 !important;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.ag-theme-alpine .ag-header {
+  background-color: #f8f9fa !important;
+  border-bottom: 2px solid #dee2e6 !important;
+}
+
+.ag-theme-alpine .ag-header-cell {
+  color: #495057 !important;
+  font-weight: 600;
+}
+
+.ag-theme-alpine .ag-row {
+  background-color: white !important;
+  border-bottom: 1px solid #dee2e6 !important;
+}
+
+.ag-theme-alpine .ag-row:hover {
+  background-color: #f8f9fa !important;
+}
+
+.ag-theme-alpine .ag-cell {
+  color: #212529 !important;
+}
+
+/* Price formatting */
+.ag-theme-alpine .ag-cell[col-id="price"]::before {
+  content: "₹";
+}
+
+/* Pagination styling */
+.ag-theme-alpine .ag-paging-button {
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+}
+
+.ag-theme-alpine .ag-paging-button:hover {
+  background-color: #5a6268 !important;
+  border-color: #545b62 !important;
+}
+
+/* Form Styles */
+.product-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  color: var(--green-dark);
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  padding: 8px;
+  background-color: var(--input-bg);
+}
+
+/* Focus styles */
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: 2px solid var(--green-dark);
+  background-color: #e8f5e9;
+}
+
+/* Submit Button */
+.submit-btn {
+  background-color: var(--green-btn);
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background-color: var(--green-btn-hover);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .product-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+
+  .product-container {
+    padding: 10px;
+  }
+
+  .ag-theme-alpine {
+    font-size: 14px;
+  }
 }

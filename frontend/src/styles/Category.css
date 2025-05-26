@@ -1,31 +1,41 @@
-  .category-container {
-    padding: 20px;
-    background-color: #a5f7d3; /* Same background as product */
-  }
+.category-container {
+  padding: 20px;
+  background-color: #a5f7d3;
+  min-height: 100vh;
+}
 
-  .category-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-  }
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
 
-  .category-title {
-    margin: 0;
-  }
+.category-title {
+  margin: 0;
+  color: #2d6a4f;
+  font-size: 24px;
+}
 
-  .add-button {
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
+.add-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
 
-  .main-content {
-    padding: 40px;
-    background-color: #e0ffe8; /* Same as product content */
-    text-align: center;
-    border-radius: 8px;
-  }
+.main-content {
+  background-color: #e0ffe8;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+/* AG Grid White Theme */
+.ag-theme-alpine {
+  background-color: white !important;
+  border: 1px solid #dee2e6 !important;
+  border-radius: 8px;
+  overflow: hidden;
+}

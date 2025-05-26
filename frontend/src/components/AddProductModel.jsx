@@ -4,7 +4,7 @@ import Modal from './Modal'; // Assuming Modal.jsx is in the same directory
 const AddProductModel = ({ onClose, onSubmit, formData, handleInputChange, categories }) => {
   return (
     <Modal onClose={onClose}>
-      <form onSubmit={onSubmit} className="product-form">
+      <form onSubmit={onSubmit} className="modal-form">
         <h3>Add New Product</h3>
 
         <div className="form-group">
