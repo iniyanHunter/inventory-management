@@ -36,9 +36,14 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
+                        // Public endpoints - no authentication required
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/error").permitAll()
+                        // Admin only endpoints
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        // Manager and Admin endpoints
                         .requestMatchers("/api/manager/**").hasAnyRole("ADMIN", "MANAGER")
+                        // All other endpoints require authentication
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
