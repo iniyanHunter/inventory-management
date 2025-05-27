@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import authService from '../services/authService';
 import '../styles/Login.css';
 
@@ -11,6 +11,10 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Check for success message from registration
+  const successMessage = location.state?.message;
 
   const handleChange = (e) => {
     setFormData({
@@ -39,6 +43,7 @@ const Login = () => {
     <div className="login-container">
       <div className="login-form">
         <h2>Login</h2>
+        {successMessage && <div className="success-message">{successMessage}</div>}
         {error && <div className="error-message">{error}</div>}
         
         <form onSubmit={handleSubmit}>
@@ -72,7 +77,19 @@ const Login = () => {
         </form>
 
         <p>
-          Don't have an account? <span style={{color: '#666'}}>Contact admin for registration</span>
+          Don't have an account? <button 
+            type="button" 
+            onClick={() => navigate('/register')}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#007bff',
+              textDecoration: 'underline',
+              cursor: 'pointer'
+            }}
+          >
+            Sign up here
+          </button>
         </p>
       </div>
     </div>

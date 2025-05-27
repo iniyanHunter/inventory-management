@@ -7,6 +7,7 @@ import Product from './pages/Product';
 import StockEntry from './pages/StockEntry';
 import Category from './pages/Category';
 import Login from './components/Login';
+import Register from './components/Register';
 import ProtectedRoute from './components/ProtectedRoute';
 import authService from './services/authService';
 import './index.css';
@@ -15,12 +16,13 @@ import './styles/App.css';
 function App() {
   const isLoggedIn = authService.isLoggedIn();
   
-  // If not logged in, show login page
+  // If not logged in, show login/register pages
   if (!isLoggedIn) {
     return (
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </Router>
