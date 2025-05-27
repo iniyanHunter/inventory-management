@@ -1,170 +1,58 @@
-/* src/styles/Product.css */
-
-/* CSS Variables for consistent theme */
-:root {
-  --green-light: #a5f7d3;
-  --green-dark: #2d6a4f;
-  --green-btn: #4CAF50;
-  --green-btn-hover: #45a049;
-  --content-bg: #e0ffe8;
-  --input-bg: #f1f8e9;
-  --input-border: #a5d6a7;
-}
-
-/* Container */
 .product-container {
-  padding: 20px;
-  background-color: var(--green-light);
+  padding: 2rem;
+  background-color: #e6f0fa;
   min-height: 100vh;
+  box-sizing: border-box;
 }
 
-/* Header */
 .product-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .product-title {
   margin: 0;
-  color: var(--green-dark);
+  color: #2a4d77;
   font-size: 24px;
+  font-weight: 600;
 }
 
-/* Add Button */
-.add-button {
-  background-color: var(--green-btn);
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.2s ease;
-}
-
-.add-button:hover {
-  background-color: var(--green-btn-hover);
-}
-
-/* Main Content */
-.main-content {
-  background-color: var(--content-bg);
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* AG Grid White Theme */
-.ag-theme-alpine {
-  background-color: white !important;
-  border: 1px solid #dee2e6 !important;
-  border-radius: 8px;
-  overflow: hidden;
+.product-content {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .ag-theme-alpine .ag-header {
-  background-color: #f8f9fa !important;
-  border-bottom: 2px solid #dee2e6 !important;
+  background-color: #e6f0fa !important;
+  border-bottom: 2px solid #cdd9e5 !important;
 }
 
 .ag-theme-alpine .ag-header-cell {
-  color: #495057 !important;
-  font-weight: 600;
+  color: #2a4d77 !important;
 }
 
-.ag-theme-alpine .ag-row {
-  background-color: white !important;
-  border-bottom: 1px solid #dee2e6 !important;
-}
-
-.ag-theme-alpine .ag-row:hover {
-  background-color: #f8f9fa !important;
-}
-
-.ag-theme-alpine .ag-cell {
-  color: #212529 !important;
-}
-
-/* Price formatting */
-.ag-theme-alpine .ag-cell[col-id="price"]::before {
-  content: "₹";
-}
-
-/* Pagination styling */
-.ag-theme-alpine .ag-paging-button {
-  background-color: #6c757d !important;
-  border-color: #6c757d !important;
-}
-
-.ag-theme-alpine .ag-paging-button:hover {
-  background-color: #5a6268 !important;
-  border-color: #545b62 !important;
-}
-
-/* Form Styles */
-.product-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  padding: 20px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group label {
-  color: var(--green-dark);
-  font-weight: 600;
-}
-
-.form-group input,
-.form-group textarea,
-.form-group select {
-  border: 1px solid var(--input-border);
-  border-radius: 4px;
-  padding: 8px;
-  background-color: var(--input-bg);
-}
-
-/* Focus styles */
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-  outline: 2px solid var(--green-dark);
-  background-color: #e8f5e9;
-}
-
-/* Submit Button */
-.submit-btn {
-  background-color: var(--green-btn);
+.add-button {
+  background-color: #4a7eb3;
   color: white;
-  padding: 12px;
+  padding: 10px 25px;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.submit-btn:hover {
-  background-color: var(--green-btn-hover);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .product-header {
-    flex-direction: column;
-    gap: 15px;
-    align-items: flex-start;
-  }
-
-  .product-container {
-    padding: 10px;
-  }
-
-  .ag-theme-alpine {
-    font-size: 14px;
-  }
+.add-button:hover {
+  background-color: #2a4d77;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }

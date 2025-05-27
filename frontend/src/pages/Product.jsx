@@ -178,7 +178,7 @@ function Product() {
       <div className="product-header">
         <h2 className="product-title">Products</h2>
         <button onClick={() => setIsModalOpen(true)} className="add-button">
-          Add Product
+          Add
         </button>
       </div>
 
