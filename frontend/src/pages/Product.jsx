@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import Modal from '../components/Modal';
 import AddProductModel from '../components/AddProductModel';
+import authService from '../services/authService';
 import '../styles/Product.css'; // Your existing CSS
 // Import AG Grid components and styles
 import { AgGridReact } from 'ag-grid-react';
@@ -26,7 +27,7 @@ function Product() {
   // Function to fetch products
   const fetchProducts = async () => {
     try {
-      const response = await fetch('/api/product'); // Use the new GET endpoint
+      const response = await authService.authenticatedFetch('/api/product'); // Use authenticated fetch
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Failed to fetch products: ${response.status} ${response.statusText} - ${errorText}`);
@@ -51,7 +52,7 @@ function Product() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('/api/category'); // Ensure this matches your CategoryController
+      const response = await authService.authenticatedFetch('/api/category'); // Use authenticated fetch
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Failed to fetch categories: ${response.status} ${response.statusText} - ${errorText}`);
@@ -81,22 +82,20 @@ function Product() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const currentUser = authService.getCurrentUser();
       const dataToSend = {
         ...formData,
         quantity: formData.quantity === '' ? 0 : Number(formData.quantity),
         threshold: formData.threshold === '' ? 0 : Number(formData.threshold),
         price: formData.price === '' ? 0.0 : Number(formData.price),
         category: { id: formData.categoryId },
-        createdBy: { id: 1 } // IMPORTANT: Replace with actual logged-in user ID in a real app
+        createdBy: { id: currentUser?.id || 1 } // Use actual logged-in user ID
       };
 
       delete dataToSend.categoryId;
 
-      const response = await fetch('/api/products', {
+      const response = await authService.authenticatedFetch('/api/products', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(dataToSend),
       });
 
