@@ -37,6 +37,7 @@ function Category() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('submitting:', formData);
     try {
       const response = await fetch(`/api/category?createdByUserId=1`, {
         method: 'POST',

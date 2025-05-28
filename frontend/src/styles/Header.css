@@ -1,0 +1,17 @@
+/* src/styles/Header.css */
+.header {
+                              background-color: #363a3d; /* Darker background color */
+                              color: white;
+                              padding: 16px 24px; /* Adjust padding as needed */
+                              display: flex;
+                              align-items: center; /* Vertically center content */
+                              height: 60px; /* Fixed height for consistency */
+                              box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+                            }
+                            
+                            .header h1 {
+                              margin: 0;
+                              font-size: 20px; /* Keep font size consistent */
+                              font-weight: 500; /* Slightly lighter weight for modern look */
+                              letter-spacing: 0.5px; /* Add some letter spacing */
+                            }

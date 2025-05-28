@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import AddProductModel from '../components/AddProductModel';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -15,15 +15,15 @@ function Product() {
     name: '',
     sku: '',
     description: '',
-    quantity: 0,
-    threshold: 0,
-    price: 0.0,
+    quantity: '',
+    threshold: '',
+    price: '',
     categoryId: ''
   });
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch('/api/product'); // ✅ FIXED
+      const res = await fetch('/api/product');
       const data = await res.json();
       setProducts(data);
     } catch (err) {
@@ -48,23 +48,31 @@ function Product() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+
+    setFormData((prev) => ({
       ...prev,
-      [name]: ['quantity', 'threshold', 'price'].includes(name) ? Number(value) : value
+      [name]: ['quantity', 'threshold', 'price'].includes(name)
+        ? value === '' ? '' : value.replace(/^0+(?!\.)/, '') // allow empty, remove leading zeroes
+        : value
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Submit Clicked");
+
     try {
       const payload = {
         ...formData,
+        quantity: Number(formData.quantity || 0),
+        threshold: Number(formData.threshold || 0),
+        price: Number(formData.price || 0),
         category: { id: formData.categoryId },
-        createdBy: { id: 1 } // hardcoded for demo
+        createdBy: { id: 1 } // Replace with real user ID in production
       };
       delete payload.categoryId;
 
-      const res = await fetch('/api/product', { // ✅ FIXED
+      const res = await fetch('/api/product', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -77,9 +85,9 @@ function Product() {
         name: '',
         sku: '',
         description: '',
-        quantity: 0,
-        threshold: 0,
-        price: 0.0,
+        quantity: '',
+        threshold: '',
+        price: '',
         categoryId: ''
       });
       fetchProducts();
@@ -98,22 +106,18 @@ function Product() {
     { field: 'price', headerName: 'Price', valueFormatter: p => `₹${p.value.toFixed(2)}` },
     { field: 'category.name', headerName: 'Category' },
     { field: 'createdBy.name', headerName: 'Created By' },
-    { field: 'createdAt', headerName: 'Created At', valueFormatter: p => new Date(p.value).toLocaleString() }
+    {
+      field: 'createdAt',
+      headerName: 'Created At',
+      valueFormatter: p => new Date(p.value).toLocaleString()
+    }
   ], []);
 
   return (
     <div className="product-container">
       <div className="product-header">
         <h2 className="product-title">Products</h2>
-        <button
-          className="add-button"
-          onClick={() => {
-            console.log('Clicked Add Product'); // ✅ For Debugging
-            setIsModalOpen(true);
-          }}
-        >
-          Add Product
-        </button>
+        <button className="add-button" onClick={() => setIsModalOpen(true)}>Add Product</button>
       </div>
 
       <div className="main-content ag-theme-alpine" style={{ height: 600 }}>

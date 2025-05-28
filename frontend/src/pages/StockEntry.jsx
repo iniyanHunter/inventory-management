@@ -37,12 +37,16 @@ function StockEntry() {
       field: 'product.name', 
       headerName: 'Product',
       valueGetter: params => params.data.product?.name || 'N/A',
+      minWidth: 150,
+      flex: 1,
       filter: 'agTextColumnFilter'
     },
     { 
       field: 'createdBy.name', 
       headerName: 'Created By',
       valueGetter: params => params.data.createdBy?.name || 'System',
+      minWidth: 150,
+      flex: 1,
       filter: 'agTextColumnFilter'
     },
     { 
@@ -57,7 +61,9 @@ function StockEntry() {
       field: 'modifiedBy.name', 
       headerName: 'Modified By',
       valueGetter: params => params.data.modifiedBy?.name || 'Not Modified',
-      filter: 'agTextColumnFilter'
+      minWidth:150,
+      flex: 1,
+      filter : 'agTextColumnFilter'
     },
     { 
       field: 'modifiedAt', 

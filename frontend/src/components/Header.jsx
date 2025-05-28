@@ -1,4 +1,6 @@
+// src/components/Header.jsx
 import React from 'react';
+import '../styles/Header.css'; // Import the new Header.css
 
 function Header() {
   return (
