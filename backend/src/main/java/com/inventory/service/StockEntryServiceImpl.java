@@ -39,7 +39,6 @@ public class StockEntryServiceImpl implements StockEntryService {
 
     @Override
     public StockEntry createStockEntry(StockEntry stockEntry) throws RuntimeException {
-        // Validate required fields
         if (stockEntry.getQuantity() == null || stockEntry.getQuantity() < 0) {
             throw new RuntimeException("Valid quantity is required");
         }
@@ -52,7 +51,27 @@ public class StockEntryServiceImpl implements StockEntryService {
         if (stockEntry.getCreatedBy() == null || stockEntry.getCreatedBy().getId() == null) {
             throw new RuntimeException("Created by user is required");
         }
-
+    
+        // Fetch the actual product from the database
+        var product = entityManager.find(stockEntry.getProduct().getClass(), stockEntry.getProduct().getId());
+    
+        if (product == null) {
+            throw new RuntimeException("Product not found");
+        }
+    
+        // Update product quantity based on stock entry type
+        switch (stockEntry.getType()) {
+            case IN -> product.setQuantity(product.getQuantity() + stockEntry.getQuantity());
+            case OUT -> {
+                if (product.getQuantity() < stockEntry.getQuantity()) {
+                    throw new RuntimeException("Not enough stock for OUT operation");
+                }
+                product.setQuantity(product.getQuantity() - stockEntry.getQuantity());
+            }
+        }
+    
+        entityManager.merge(product); // Update the product
+    
         return stockEntryRepository.save(stockEntry);
     }
 }

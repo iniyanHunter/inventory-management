@@ -14,18 +14,6 @@ body {
   height: 100vh;
 }
 
-
-.header {
-  background-color: #333;
-  color: white;
-  padding: 16px 24px;
-}
-.header h1 {
-  margin: 0;
-  font-size: 20px;
-}
-
-
 .content-area {
   flex: 1;
   display: flex;

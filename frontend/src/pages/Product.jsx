@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import AddProductModel from '../components/AddProductModel';
+import EditStockEntryModal from '../components/EditStockEntryModal';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
@@ -7,6 +8,7 @@ import '../styles/Product.css';
 
 function Product() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const gridRef = useRef();
@@ -19,6 +21,13 @@ function Product() {
     threshold: '',
     price: '',
     categoryId: ''
+  });
+
+  const [editFormData, setEditFormData] = useState({
+    productId: '',
+    productName: '',
+    quantity: '',
+    description: ''
   });
 
   const fetchProducts = async () => {
@@ -52,14 +61,31 @@ function Product() {
     setFormData((prev) => ({
       ...prev,
       [name]: ['quantity', 'threshold', 'price'].includes(name)
-        ? value === '' ? '' : value.replace(/^0+(?!\.)/, '') // allow empty, remove leading zeroes
+        ? value === '' ? '' : value.replace(/^0+(?!\.)/, '')
         : value
     }));
   };
 
+  const handleEditInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditFormData(prev => ({
+      ...prev,
+      [name]: name === 'quantity' ? value.replace(/^0+(?!\.)/, '') : value
+    }));
+  };
+
+  const handleEditProduct = (product) => {
+    setEditFormData({
+      productId: product.id,
+      productName: product.name,
+      quantity: product.quantity,
+      description: ''
+    });
+    setEditModalOpen(true);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submit Clicked");
 
     try {
       const payload = {
@@ -68,7 +94,7 @@ function Product() {
         threshold: Number(formData.threshold || 0),
         price: Number(formData.price || 0),
         category: { id: formData.categoryId },
-        createdBy: { id: 1 } // Replace with real user ID in production
+        createdBy: { id: 1 }
       };
       delete payload.categoryId;
 
@@ -96,6 +122,35 @@ function Product() {
     }
   };
 
+  const submitStockEntry = async () => {
+    try {
+      const payload = {
+        product: { id: editFormData.productId },
+        quantity: Number(editFormData.quantity),
+        description: editFormData.description,
+        type: 'OUT',
+        createdBy: { id: 1 }
+      };
+  
+      const res = await fetch('/api/stock-entry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+  
+      if (!res.ok) throw new Error('Failed to submit stock entry');
+      
+      setEditModalOpen(false);
+      
+      // ✅ Refresh the product list after stock change
+      fetchProducts();
+  
+    } catch (err) {
+      console.error('Stock Entry Error:', err);
+    }
+  };
+  
+
   const columnDefs = useMemo(() => [
     { field: 'id', headerName: 'ID', width: 90 },
     { field: 'name', headerName: 'Name' },
@@ -110,6 +165,14 @@ function Product() {
       field: 'createdAt',
       headerName: 'Created At',
       valueFormatter: p => new Date(p.value).toLocaleString()
+    },
+    {
+      headerName: 'Actions',
+      field: 'actions',
+      cellRenderer: (params) => (
+        <button className="edit-btn" onClick={() => handleEditProduct(params.data)}>Edit</button>
+      ),
+      width: 120
     }
   ], []);
 
@@ -117,7 +180,7 @@ function Product() {
     <div className="product-container">
       <div className="product-header">
         <h2 className="product-title">Products</h2>
-        <button className="add-button" onClick={() => setIsModalOpen(true)}>Add Product</button>
+        <button className="add-button" onClick={() => setIsModalOpen(true)}>Add</button>
       </div>
 
       <div className="main-content ag-theme-alpine" style={{ height: 600 }}>
@@ -137,6 +200,15 @@ function Product() {
           formData={formData}
           handleInputChange={handleInputChange}
           categories={categories}
+        />
+      )}
+
+      {editModalOpen && (
+        <EditStockEntryModal
+          onClose={() => setEditModalOpen(false)}
+          onSubmit={submitStockEntry}
+          formData={editFormData}
+          onChange={handleEditInputChange}
         />
       )}
     </div>
