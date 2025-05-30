@@ -190,6 +190,12 @@ function Product() {
           columnDefs={columnDefs}
           pagination={true}
           paginationPageSize={10}
+          defaultColDef={{
+            sortable: true,
+            filter: true,
+            resizable: true,
+            floatingFilter: true
+          }}
         />
       </div>
 
