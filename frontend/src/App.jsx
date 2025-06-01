@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -9,14 +9,19 @@ import Category from './pages/Category';
 import './index.css';
 import './styles/App.css';
 
-
 function App() {
+  const [sidebarVisible, setSidebarVisible] = useState(true);
+
+  const toggleSidebar = () => {
+    setSidebarVisible(!sidebarVisible);
+  };
+
   return (
     <Router>
       <div className="app-container">
-        <Sidebar />
-        <div className="content-area">
-          <Header />
+        <Sidebar visible={sidebarVisible} />
+        <div className={`content-area ${!sidebarVisible ? 'expanded' : ''}`}>
+          <Header onToggleSidebar={toggleSidebar} />
           <main className="main-content">
             <Routes>
               <Route path="/" element={<Dashboard />} />

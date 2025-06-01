@@ -11,17 +11,37 @@ body {
 
 .app-container {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
+  position: relative;
 }
+
 
 .content-area {
   flex: 1;
   display: flex;
   flex-direction: column;
+  margin-left: 220px; /* Default sidebar width */
+  transition: margin-left 0.3s ease;
 }
+
 .main-content {
   flex: 1;
   padding: 24px;
   background-color: #f9f9f9;
   overflow-y: auto;
+}
+/* Add these styles */
+.sidebar-toggle {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    margin-right: 15px;
+    padding: 5px;
+}
+
+.content-area.expanded {
+  margin-left: 0;
+  transition: margin-left 0.3s ease;
 }

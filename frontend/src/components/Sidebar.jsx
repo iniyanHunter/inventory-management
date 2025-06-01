@@ -2,11 +2,11 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import '../styles/Sidebar.css';
 
-function Sidebar() {
+function Sidebar({ visible }) {
   const location = useLocation();
 
   return (
-    <div className="sidebar">
+    <div className={`sidebar ${visible ? '' : 'hidden'}`}>
       <h3>Menu</h3>
       <ul>
         <li>
