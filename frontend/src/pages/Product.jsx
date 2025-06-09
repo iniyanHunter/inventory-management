@@ -1,3 +1,4 @@
+// Product.jsx
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import AddProductModel from '../components/AddProductModel';
 import EditStockEntryModal from '../components/EditStockEntryModal';
