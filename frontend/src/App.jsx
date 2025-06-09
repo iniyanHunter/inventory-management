@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
@@ -6,16 +7,34 @@ import Dashboard from './pages/Dashboard';
 import Product from './pages/Product';
 import StockEntry from './pages/StockEntry';
 import Category from './pages/Category';
+import Login from './components/Login';
+import Register from './components/Register';
+import ProtectedRoute from './components/ProtectedRoute';
+import authService from './services/authService';
 import './index.css';
 import './styles/App.css';
 
 function App() {
+
+  const isLoggedIn = authService.isLoggedIn();
+  
+  // If not logged in, show login/register pages
+  if (!isLoggedIn) {
+    return (
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </Router>
+    );
+  }
   const [sidebarVisible, setSidebarVisible] = useState(true);
 
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
   };
-
   return (
     <Router>
       <div className="app-container">
@@ -23,12 +42,16 @@ function App() {
         <div className={`content-area ${!sidebarVisible ? 'expanded' : ''}`}>
           <Header onToggleSidebar={toggleSidebar} />
           <main className="main-content">
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/product" element={<Product />} />
-              <Route path="/stockentry" element={<StockEntry />} />
-              <Route path="/category" element={<Category />} />
-            </Routes>
+            <ProtectedRoute>
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/product" element={<Product />} />
+                <Route path="/stockentry" element={<StockEntry />} />
+                <Route path="/category" element={<Category />} />
+                <Route path="/login" element={<Navigate to="/" replace />} />
+              </Routes>
+            </ProtectedRoute>
           </main>
         </div>
       </div>

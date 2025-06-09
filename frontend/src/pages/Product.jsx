@@ -1,7 +1,10 @@
 // Product.jsx
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import AddProductModel from '../components/AddProductModel';
+import authService from '../services/authService';
+import '../styles/Product.css'; // Your existing CSS
 import EditStockEntryModal from '../components/EditStockEntryModal';
+// Import AG Grid components and styles
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
@@ -33,8 +36,12 @@ function Product() {
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch('/api/product');
-      const data = await res.json();
+      const response = await authService.authenticatedFetch('/api/product'); // Use authenticated fetch
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to fetch products: ${response.status} ${response.statusText} - ${errorText}`);
+      }
+      const data = await response.json();
       setProducts(data);
     } catch (err) {
       console.error('Fetch products error:', err);
@@ -43,8 +50,12 @@ function Product() {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch('/api/category');
-      const data = await res.json();
+      const response = await authService.authenticatedFetch('/api/category'); // Use authenticated fetch
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to fetch categories: ${response.status} ${response.statusText} - ${errorText}`);
+      }
+      const data = await response.json();
       setCategories(data);
     } catch (err) {
       console.error('Fetch categories error:', err);
@@ -89,20 +100,22 @@ function Product() {
     e.preventDefault();
 
     try {
-      const payload = {
+      const currentUser = authService.getCurrentUser();
+      const dataToSend = {
         ...formData,
         quantity: Number(formData.quantity || 0),
         threshold: Number(formData.threshold || 0),
         price: Number(formData.price || 0),
         category: { id: formData.categoryId },
-        createdBy: { id: 1 }
+        createdBy: { id: currentUser?.id || 1 } // Use actual logged-in user ID
       };
-      delete payload.categoryId;
 
-      const res = await fetch('/api/product', {
+      delete dataToSend.categoryId;
+
+      const response = await authService.authenticatedFetch('/api/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(dataToSend),
       });
 
       if (!res.ok) throw new Error('Product creation failed');

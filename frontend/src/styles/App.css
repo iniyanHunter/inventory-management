@@ -1,20 +1,31 @@
-
 * {
   box-sizing: border-box;
 }
+
 body {
   margin: 0;
   font-family: Arial, sans-serif;
 }
 
-
-
 .app-container {
   display: flex;
   min-height: 100vh;
-  position: relative;
+  position: relative
+
 }
 
+.header {
+  background-color: #333;
+  color: white;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.header h1 {
+  margin: 0;
+  font-size: 20px;
+}
 
 .content-area {
   flex: 1;

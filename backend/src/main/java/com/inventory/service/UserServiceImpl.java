@@ -51,4 +51,14 @@ public class UserServiceImpl implements UserService {
 
         return userRepository.save(user);
     }
+
+    @Override
+    public User updateUser(User user) throws RuntimeException {
+        // Check if user exists
+        if (user.getId() == null || !userRepository.existsById(user.getId())) {
+            throw new RuntimeException("User not found");
+        }
+        
+        return userRepository.save(user);
+    }
 }
