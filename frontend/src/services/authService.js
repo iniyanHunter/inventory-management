@@ -25,7 +25,8 @@ class AuthService {
         username: data.username,
         email: data.email,
         name: data.name,
-        role: data.role
+        role: data.role,
+        userId: data.userId
       }));
 
       return data;

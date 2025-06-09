@@ -36,13 +36,13 @@ function Product() {
 
   const fetchProducts = async () => {
     try {
-      const response = await authService.authenticatedFetch('/api/product'); // Use authenticated fetch
+      const response = await authService.apiCall('/api/product'); // Changed to /api/products
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Failed to fetch products: ${response.status} ${response.statusText} - ${errorText}`);
       }
       const data = await response.json();
-      setProducts(data);
+      setProducts(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Fetch products error:', err);
     }
@@ -107,18 +107,18 @@ function Product() {
         threshold: Number(formData.threshold || 0),
         price: Number(formData.price || 0),
         category: { id: formData.categoryId },
-        createdBy: { id: currentUser?.id || 1 } // Use actual logged-in user ID
+        createdBy: { id: currentUser?.userId || 1 } // Use actual logged-in user ID
       };
 
       delete dataToSend.categoryId;
 
-      const response = await authService.authenticatedFetch('/api/products', {
+      const response = await authService.authenticatedFetch('/api/product', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dataToSend),
       });
 
-      if (!res.ok) throw new Error('Product creation failed');
+      if (!response.ok) throw new Error('Product creation failed');
 
       setIsModalOpen(false);
       setFormData({
@@ -146,17 +146,18 @@ function Product() {
         createdBy: { id: 1 }
       };
   
-      const res = await fetch('/api/stock-entry', {
+      const response = await authService.apiCall('/api/stock-entry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
   
-      if (!res.ok) throw new Error('Failed to submit stock entry');
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to submit stock entry: ${errorText}`);
+      }
       
       setEditModalOpen(false);
-      
-      // ✅ Refresh the product list after stock change
       fetchProducts();
   
     } catch (err) {

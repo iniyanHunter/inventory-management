@@ -4,6 +4,7 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import AddCategoryModel from '../components/AddCategoryModel';
 import '../styles/Category.css';
+import authService from '../services/authService';
 
 function Category() {
   const [categories, setCategories] = useState([]);
@@ -15,7 +16,7 @@ function Category() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('/api/category');
+      const response = await authService.apiCall('/api/category');
       const data = await response.json();
       setCategories(data);
     } catch (error) {
@@ -39,7 +40,7 @@ function Category() {
     e.preventDefault();
     console.log('submitting:', formData);
     try {
-      const response = await fetch(`/api/category?createdByUserId=1`, {
+      const response = await authService.apiCall(`/api/category?createdByUserId=1`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

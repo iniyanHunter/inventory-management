@@ -48,6 +48,7 @@ public class AuthController {
                     user.getUsername(),
                     user.getEmail(),
                     user.getName(),
+                    user.getId().toString(),
                     user.getRole()
             );
 

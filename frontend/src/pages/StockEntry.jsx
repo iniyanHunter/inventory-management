@@ -4,11 +4,13 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import '../styles/StockEntry.css';
 import Modal from '../components/Modal';
+import authService from '../services/authService';
 
 function StockEntry() {
   const [stockEntries, setStockEntries] = useState([]);
   const [products, setProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
     productId: '',
     quantity: '',
@@ -18,21 +20,31 @@ function StockEntry() {
 
   const fetchStockEntries = async () => {
     try {
-      const response = await fetch('/api/stock-entry');
+      const response = await authService.apiCall('/api/stock-entry');
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to fetch stock entries: ${errorText}`);
+      }
       const data = await response.json();
-      setStockEntries(data);
+      setStockEntries(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error fetching stock entries:', error);
+      setError(error.message);
     }
   };
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('/api/product');
+      const response = await authService.apiCall('/api/product');
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to fetch products: ${errorText}`);
+      }
       const data = await response.json();
-      setProducts(data);
+      setProducts(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error fetching products:', error);
+      setError(error.message);
     }
   };
 
@@ -62,24 +74,32 @@ function StockEntry() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const currentUser = authService.getCurrentUser();
       const payload = {
         quantity: parseInt(formData.quantity),
         type: formData.type,
         description: formData.description,
         product: { id: formData.productId },
-        createdBy: { id: 1 } // replace with logged-in user
+        createdBy: { id: currentUser?.id || 1 }
       };
-      const res = await fetch('/api/stock-entry', {
+      
+      const response = await authService.apiCall('/api/stock-entry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      if (!res.ok) throw new Error('Failed to save');
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to save stock entry: ${errorText}`);
+      }
+      
       setIsModalOpen(false);
       setFormData({ productId: '', quantity: '', type: 'IN', description: '' });
       fetchStockEntries();
     } catch (error) {
       console.error('Error saving stock entry:', error);
+      setError(error.message);
     }
   };
 

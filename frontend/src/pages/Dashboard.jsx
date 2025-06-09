@@ -3,24 +3,46 @@ import '../styles/Dashboard.css';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
+import authService from '../services/authService';
 
 const Dashboard = () => {
-  const [stats, setStats] = useState({});
+  const [stats, setStats] = useState({
+    totalProducts: 0,
+    totalProductValue: 0,
+    lowStockCount: 0,
+    recentActivityCount: 0
+  });
   const [lowStock, setLowStock] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('/api/dashboard/summary')
-      .then(res => res.json())
-      .then(data => setStats(data));
+    const fetchDashboardData = async () => {
+      try {
+        // Fetch summary
+        const summaryResponse = await authService.apiCall('/api/dashboard/summary');
+        if (!summaryResponse.ok) throw new Error('Failed to fetch summary');
+        const summaryData = await summaryResponse.json();
+        setStats(summaryData);
 
-    fetch('/api/dashboard/low-stock')
-      .then(res => res.json())
-      .then(data => setLowStock(data));
+        // Fetch low stock
+        const lowStockResponse = await authService.apiCall('/api/dashboard/low-stock');
+        if (!lowStockResponse.ok) throw new Error('Failed to fetch low stock data');
+        const lowStockData = await lowStockResponse.json();
+        setLowStock(Array.isArray(lowStockData) ? lowStockData : []);
 
-    fetch('/api/dashboard/recent-activity')
-      .then(res => res.json())
-      .then(data => setRecentActivity(data));
+        // Fetch recent activity
+        const activityResponse = await authService.apiCall('/api/dashboard/recent-activity');
+        if (!activityResponse.ok) throw new Error('Failed to fetch recent activity');
+        const activityData = await activityResponse.json();
+        setRecentActivity(Array.isArray(activityData) ? activityData : []);
+      } catch (err) {
+        console.error('Dashboard data fetch error:', err);
+        setError(err.message);
+      }
+    };
+
+    fetchDashboardData();
   }, []);
 
   const productColumns = [
@@ -38,6 +60,16 @@ const Dashboard = () => {
     { headerName: 'Quantity', field: 'quantity' },
     { headerName: 'Created At', field: 'createdAt' }
   ];
+
+  if (error) {
+    return (
+      <div className="dashboard-container">
+        <div className="error-message">
+          Error loading dashboard: {error}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-container">
