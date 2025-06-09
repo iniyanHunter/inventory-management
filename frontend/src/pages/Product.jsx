@@ -1,30 +1,39 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import Modal from '../components/Modal';
+// Product.jsx
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import AddProductModel from '../components/AddProductModel';
 import authService from '../services/authService';
 import '../styles/Product.css'; // Your existing CSS
+import EditStockEntryModal from '../components/EditStockEntryModal';
 // Import AG Grid components and styles
 import { AgGridReact } from 'ag-grid-react';
-import 'ag-grid-community/styles/ag-grid.css'; // Core grid CSS
-import 'ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-alpine.css';
+import '../styles/Product.css';
 
 function Product() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [products, setProducts] = useState([]); // State to store fetched products
-  const gridRef = useRef(null); // Ref for AG Grid API
+  const gridRef = useRef();
 
   const [formData, setFormData] = useState({
     name: '',
     sku: '',
     description: '',
-    quantity: 0,
-    threshold: 0,
-    price: 0.0,
+    quantity: '',
+    threshold: '',
+    price: '',
     categoryId: ''
   });
 
-  // Function to fetch products
+  const [editFormData, setEditFormData] = useState({
+    productId: '',
+    productName: '',
+    quantity: '',
+    description: ''
+  });
+
   const fetchProducts = async () => {
     try {
       const response = await authService.authenticatedFetch('/api/product'); // Use authenticated fetch
@@ -33,22 +42,11 @@ function Product() {
         throw new Error(`Failed to fetch products: ${response.status} ${response.statusText} - ${errorText}`);
       }
       const data = await response.json();
-      setProducts(data); // Set the fetched products to state
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      alert(`Failed to load products. Please try again. Error: ${error.message}`);
+      setProducts(data);
+    } catch (err) {
+      console.error('Fetch products error:', err);
     }
   };
-
-
-  // Fetch categories and products when component mounts
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      await fetchCategories();
-      await fetchProducts(); // Fetch products on mount
-    };
-    fetchInitialData();
-  }, []); // Empty dependency array means this runs once on mount
 
   const fetchCategories = async () => {
     try {
@@ -59,35 +57,55 @@ function Product() {
       }
       const data = await response.json();
       setCategories(data);
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-      alert(`Failed to load categories. Please try again. Error: ${error.message}`);
+    } catch (err) {
+      console.error('Fetch categories error:', err);
     }
   };
 
+  useEffect(() => {
+    fetchProducts();
+    fetchCategories();
+  }, []);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => {
-      let newValue = value;
-      if (['quantity', 'threshold', 'price'].includes(name)) {
-        newValue = value === '' ? '' : Number(value);
-      }
-      return {
-        ...prev,
-        [name]: newValue,
-      };
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: ['quantity', 'threshold', 'price'].includes(name)
+        ? value === '' ? '' : value.replace(/^0+(?!\.)/, '')
+        : value
+    }));
+  };
+
+  const handleEditInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditFormData(prev => ({
+      ...prev,
+      [name]: name === 'quantity' ? value.replace(/^0+(?!\.)/, '') : value
+    }));
+  };
+
+  const handleEditProduct = (product) => {
+    setEditFormData({
+      productId: product.id,
+      productName: product.name,
+      quantity: product.quantity,
+      description: ''
     });
+    setEditModalOpen(true);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       const currentUser = authService.getCurrentUser();
       const dataToSend = {
         ...formData,
-        quantity: formData.quantity === '' ? 0 : Number(formData.quantity),
-        threshold: formData.threshold === '' ? 0 : Number(formData.threshold),
-        price: formData.price === '' ? 0.0 : Number(formData.price),
+        quantity: Number(formData.quantity || 0),
+        threshold: Number(formData.threshold || 0),
+        price: Number(formData.price || 0),
         category: { id: formData.categoryId },
         createdBy: { id: currentUser?.id || 1 } // Use actual logged-in user ID
       };
@@ -96,103 +114,102 @@ function Product() {
 
       const response = await authService.authenticatedFetch('/api/products', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dataToSend),
       });
 
-      if (!response.ok) {
-        let errorMessage = 'Failed to create product. Unknown error.';
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.message || errorData.error || `Server responded with status: ${response.status}`;
-        } catch (parseError) {
-          errorMessage = `Server responded with status: ${response.status} ${response.statusText}`;
-        }
-        throw new Error(errorMessage);
-      }
+      if (!res.ok) throw new Error('Product creation failed');
 
       setIsModalOpen(false);
       setFormData({
         name: '',
         sku: '',
         description: '',
-        quantity: 0,
-        threshold: 0,
-        price: 0.0,
+        quantity: '',
+        threshold: '',
+        price: '',
         categoryId: ''
       });
-      alert('Product created successfully!');
-      fetchProducts(); // Re-fetch products to update the grid after successful creation
-    } catch (error) {
-      console.error('Error creating product:', error);
-      alert(`Error creating product: ${error.message}`);
+      fetchProducts();
+    } catch (err) {
+      console.error('Product save error:', err);
     }
   };
 
-  // AG Grid Column Definitions
-  const [columnDefs] = useState([
-    { field: 'id', headerName: 'ID', width: 90, sortable: true, filter: true },
-    { field: 'name', headerName: 'Product Name', width: 200, sortable: true, filter: true },
-    { field: 'sku', headerName: 'SKU', width: 150, sortable: true, filter: true },
-    { field: 'description', headerName: 'Description', width: 250, sortable: true, filter: true },
-    { field: 'quantity', headerName: 'Quantity', width: 120, sortable: true, filter: 'agNumberColumnFilter' },
-    { field: 'threshold', headerName: 'Threshold', width: 120, sortable: true, filter: 'agNumberColumnFilter' },
-    { field: 'price', headerName: 'Price', width: 120, sortable: true, filter: 'agNumberColumnFilter', valueFormatter: p => '₹' + p.value.toFixed(2) },
-    // Nested object access for category name
-    { field: 'category.name', headerName: 'Category', width: 150, sortable: true, filter: true },
-    // Nested object access for createdBy user name
-    { field: 'createdBy.name', headerName: 'Created By', width: 150, sortable: true, filter: true },
-    { field: 'createdAt', headerName: 'Created At', width: 180, sortable: true, filter: 'agDateColumnFilter',
-      valueFormatter: p => p.value ? new Date(p.value).toLocaleString() : ''
+  const submitStockEntry = async () => {
+    try {
+      const payload = {
+        product: { id: editFormData.productId },
+        quantity: Number(editFormData.quantity),
+        description: editFormData.description,
+        type: 'OUT',
+        createdBy: { id: 1 }
+      };
+  
+      const res = await fetch('/api/stock-entry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+  
+      if (!res.ok) throw new Error('Failed to submit stock entry');
+      
+      setEditModalOpen(false);
+      
+      // ✅ Refresh the product list after stock change
+      fetchProducts();
+  
+    } catch (err) {
+      console.error('Stock Entry Error:', err);
+    }
+  };
+  
+
+  const columnDefs = useMemo(() => [
+    { field: 'id', headerName: 'ID', width: 90 },
+    { field: 'name', headerName: 'Name' },
+    { field: 'sku', headerName: 'SKU' },
+    { field: 'description', headerName: 'Description' },
+    { field: 'quantity', headerName: 'Quantity' },
+    { field: 'threshold', headerName: 'Threshold' },
+    { field: 'price', headerName: 'Price', valueFormatter: p => `₹${p.value.toFixed(2)}` },
+    { field: 'category.name', headerName: 'Category' },
+    { field: 'createdBy.name', headerName: 'Created By' },
+    {
+      field: 'createdAt',
+      headerName: 'Created At',
+      valueFormatter: p => new Date(p.value).toLocaleString()
     },
-    // Add columns for actions like Edit/Delete later
-    // {
-    //   headerName: 'Actions',
-    //   width: 150,
-    //   cellRenderer: (params) => (
-    //     <div>
-    //       <button onClick={() => console.log('Edit', params.data)}>Edit</button>
-    //       <button onClick={() => console.log('Delete', params.data)}>Delete</button>
-    //     </div>
-    //   )
-    // }
-  ]);
-
-  // Default grid options
-  const defaultColDef = useMemo(() => {
-    return {
-      flex: 1,
-      minWidth: 100,
-      resizable: true,
-      filter: true, // Enable filtering on all columns by default
-    };
-  }, []);
-
-  const onGridReady = useCallback((params) => {
-    gridRef.current = params.api;
-  }, []);
-
+    {
+      headerName: 'Actions',
+      field: 'actions',
+      cellRenderer: (params) => (
+        <button className="edit-btn" onClick={() => handleEditProduct(params.data)}>Edit</button>
+      ),
+      width: 120
+    }
+  ], []);
 
   return (
     <div className="product-container">
       <div className="product-header">
         <h2 className="product-title">Products</h2>
-        <button onClick={() => setIsModalOpen(true)} className="add-button">
-          Add Product
-        </button>
+        <button className="add-button" onClick={() => setIsModalOpen(true)}>Add</button>
       </div>
 
-      <div className="main-content ag-theme-alpine" style={{ height: 600, width: '100%' }}>
-        {/* AG Grid component */}
+      <div className="main-content ag-theme-alpine" style={{ height: 600 }}>
         <AgGridReact
           ref={gridRef}
-          rowData={products} // Data for the grid
-          columnDefs={columnDefs} // Column definitions
-          defaultColDef={defaultColDef} // Default column options
-          animateRows={true} // Optional: animate row changes
-          rowSelection={'multiple'} // Optional: enable row selection
-          onGridReady={onGridReady}
-          pagination={true} // Enable pagination
-          paginationPageSize={10} // Set default page size
+          rowData={products}
+          columnDefs={columnDefs}
+          pagination={true}
+          paginationPageSize={10}
+          defaultColDef={{
+            sortable: true,
+            filter: true,
+            resizable: true,
+            floatingFilter: true
+          }}
         />
       </div>
 
@@ -203,6 +220,15 @@ function Product() {
           formData={formData}
           handleInputChange={handleInputChange}
           categories={categories}
+        />
+      )}
+
+      {editModalOpen && (
+        <EditStockEntryModal
+          onClose={() => setEditModalOpen(false)}
+          onSubmit={submitStockEntry}
+          formData={editFormData}
+          onChange={handleEditInputChange}
         />
       )}
     </div>

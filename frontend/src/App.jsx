@@ -1,5 +1,6 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import Dashboard from './pages/Dashboard';
@@ -14,6 +15,7 @@ import './index.css';
 import './styles/App.css';
 
 function App() {
+
   const isLoggedIn = authService.isLoggedIn();
   
   // If not logged in, show login/register pages
@@ -28,14 +30,17 @@ function App() {
       </Router>
     );
   }
+  const [sidebarVisible, setSidebarVisible] = useState(true);
 
-  // If logged in, show the main application
+  const toggleSidebar = () => {
+    setSidebarVisible(!sidebarVisible);
+  };
   return (
     <Router>
       <div className="app-container">
-        <Sidebar />
-        <div className="content-area">
-          <Header />
+        <Sidebar visible={sidebarVisible} />
+        <div className={`content-area ${!sidebarVisible ? 'expanded' : ''}`}>
+          <Header onToggleSidebar={toggleSidebar} />
           <main className="main-content">
             <ProtectedRoute>
               <Routes>
