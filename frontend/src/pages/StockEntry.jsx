@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
@@ -14,9 +14,10 @@ function StockEntry() {
   const [formData, setFormData] = useState({
     productId: '',
     quantity: '',
-    type: 'IN',
+    type: '',
     description: ''
   });
+  const gridRef = useRef();
 
   const fetchStockEntries = async () => {
     try {
@@ -26,7 +27,10 @@ function StockEntry() {
         throw new Error(`Failed to fetch stock entries: ${errorText}`);
       }
       const data = await response.json();
-      setStockEntries(Array.isArray(data) ? data : []);
+      const sorted = Array.isArray(data)
+        ? [...data].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        : [];
+      setStockEntries(sorted);
     } catch (error) {
       console.error('Error fetching stock entries:', error);
       setError(error.message);
@@ -53,6 +57,12 @@ function StockEntry() {
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+    if (gridRef.current?.api) {
+      gridRef.current.api.paginationGoToFirstPage();
+    }
+  }, [stockEntries]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -67,7 +77,7 @@ function StockEntry() {
     setFormData({
       ...formData,
       productId: selectedId,
-      quantity: product ? product.quantity : '',
+      quantity: 0
     });
   };
 
@@ -82,18 +92,18 @@ function StockEntry() {
         product: { id: formData.productId },
         createdBy: { id: currentUser?.id || 1 }
       };
-      
+
       const response = await authService.apiCall('/api/stock-entry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      
+
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Failed to save stock entry: ${errorText}`);
       }
-      
+
       setIsModalOpen(false);
       setFormData({ productId: '', quantity: '', type: 'IN', description: '' });
       fetchStockEntries();
@@ -107,7 +117,15 @@ function StockEntry() {
     { field: 'id', headerName: 'ID', width: 90 },
     { field: 'quantity', headerName: 'Quantity', width: 120 },
     { field: 'type', headerName: 'Entry Type', width: 150 },
-    { field: 'description', headerName: 'Description', flex: 100, minWidth: 300, filter: 'agTextColumnFilter', wrapText: true, autoHeight: true },
+    {
+      field: 'description',
+      headerName: 'Description',
+      flex: 100,
+      minWidth: 300,
+      filter: 'agTextColumnFilter',
+      wrapText: true,
+      autoHeight: true
+    },
     {
       headerName: 'Product',
       valueGetter: p => p.data.product?.name || 'N/A'
@@ -141,6 +159,7 @@ function StockEntry() {
 
       <div className="stockentry-content ag-theme-alpine" style={{ height: 600 }}>
         <AgGridReact
+          ref={gridRef}
           rowData={stockEntries}
           columnDefs={columnDefs}
           pagination={true}
@@ -149,10 +168,11 @@ function StockEntry() {
             sortable: true,
             resizable: true,
             filter: true,
-            floatingFilter: true,
+            floatingFilter: false,
             wrapText: true,
             autoHeight: true
           }}
+          suppressMenu={false}
         />
       </div>
 
@@ -173,12 +193,20 @@ function StockEntry() {
 
             <div className="form-group">
               <label>Quantity:</label>
-              <input type="number" name="quantity" value={formData.quantity} onChange={handleChange} min="1" required />
+              <input
+                type="number"
+                name="quantity"
+                value={formData.quantity}
+                onChange={handleChange}
+                min="1"
+                required
+              />
             </div>
 
             <div className="form-group">
               <label>Type:</label>
-              <select name="type" value={formData.type} onChange={handleChange}>
+              <select name="type" value={formData.type} onChange={handleChange} required>
+                <option value="" disabled>Select Type</option>
                 <option value="IN">IN</option>
                 <option value="OUT">OUT</option>
               </select>
@@ -186,7 +214,11 @@ function StockEntry() {
 
             <div className="form-group">
               <label>Description:</label>
-              <textarea name="description" value={formData.description} onChange={handleChange}></textarea>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+              ></textarea>
             </div>
 
             <button type="submit" className="submit-btn">Save Entry</button>

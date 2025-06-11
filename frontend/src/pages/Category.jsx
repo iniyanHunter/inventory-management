@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
@@ -9,16 +9,17 @@ import authService from '../services/authService';
 function Category() {
   const [categories, setCategories] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    description: ''
-  });
+  const [formData, setFormData] = useState({ name: '', description: '' });
+  const gridRef = useRef();
 
   const fetchCategories = async () => {
     try {
       const response = await authService.apiCall('/api/category');
       const data = await response.json();
-      setCategories(data);
+      const sorted = Array.isArray(data)
+        ? [...data].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        : [];
+      setCategories(sorted);
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
@@ -28,24 +29,28 @@ function Category() {
     fetchCategories();
   }, []);
 
+  useEffect(() => {
+    if (gridRef.current?.api) {
+      gridRef.current.api.paginationGoToFirstPage();
+    }
+  }, [categories]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('submitting:', formData);
     try {
       const response = await authService.apiCall(`/api/category?createdByUserId=1`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
+
       if (!response.ok) throw new Error('Failed to create category');
+
       setIsModalOpen(false);
       setFormData({ name: '', description: '' });
       fetchCategories();
@@ -79,6 +84,7 @@ function Category() {
 
       <div className="main-content ag-theme-alpine" style={{ height: 500 }}>
         <AgGridReact
+          ref={gridRef}
           rowData={categories}
           columnDefs={columnDefs}
           pagination={true}
@@ -87,8 +93,9 @@ function Category() {
             sortable: true,
             filter: true,
             resizable: true,
-            floatingFilter: true
+            floatingFilter: false
           }}
+          suppressMenu={false}
         />
       </div>
 

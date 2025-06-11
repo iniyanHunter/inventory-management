@@ -14,4 +14,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findLowStockProducts();
     
     Product findBySku(String sku);
+    
 }
