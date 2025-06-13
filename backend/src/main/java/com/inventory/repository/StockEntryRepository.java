@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface StockEntryRepository extends JpaRepository<StockEntry, Long> {
-
+  
     List<StockEntry> findByCreatedAtAfter(LocalDateTime date);
-
-}
+} 
