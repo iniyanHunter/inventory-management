@@ -56,7 +56,5 @@ public class DashBoardServiceImpl implements DashBoardService {
         stats.setRecentActivityCount(recent.size());
 
         return stats;
-
     }
 }
-
